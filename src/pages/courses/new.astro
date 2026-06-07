@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getEnv } from '../../lib/db'
+import { getSessionUser } from '../../lib/auth'
+const env = getEnv(Astro)
+const sessionId = Astro.cookies.get('session')?.value
+const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
+if (!user) return Astro.redirect('/login')
+const error = Astro.url.searchParams.get('error') || ''
+---
+<BaseLayout title="New Course" user={user}>
+  <div style="max-width:500px;margin:0 auto;">
+    <a href="/dashboard" style="color:var(--text-secondary);text-decoration:none;font-size:14px;display:inline-block;margin-bottom:20px;">← Back to Dashboard</a>
+    <div class="card">
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:20px;">New Course</h2>
+      {error && <div style="padding:12px;border-radius:8px;background:#fef2f2;color:#991b1b;font-size:14px;margin-bottom:16px;">{error}</div>}
+      <form method="POST" action="/api/courses">
+        <div class="form-group">
+          <label>Course Name</label>
+          <input type="text" name="name" placeholder="e.g., Data Structures" required />
+        </div>
+        <div class="form-group">
+          <label>Semester</label>
+          <input type="text" name="semester" placeholder="e.g., Spring 2026" />
+        </div>
+        <div class="form-group">
+          <label>Credits</label>
+          <input type="number" name="credits" value="3" min="1" max="6" />
+        </div>
+        <div class="form-group">
+          <label>Target Grade</label>
+          <select name="target_grade">
+            <option value="A">A</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B">B</option>
+            <option value="B-">B-</option>
+            <option value="C+">C+</option>
+            <option value="C">C</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Create Course</button>
+      </form>
+    </div>
+  </div>
+</BaseLayout>

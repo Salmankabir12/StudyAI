@@ -1,0 +1,9 @@
+name = "studyai"
+compatibility_date = "2026-06-07"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "./dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "studyai-db"
+database_id = "c99d59bb-b561-408e-b571-e5a6edbd4645"

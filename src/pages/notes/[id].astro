@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getEnv } from '../../lib/db'
+import { getSessionUser } from '../../lib/auth'
+const env = getEnv(Astro)
+const sessionId = Astro.cookies.get('session')?.value
+const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
+if (!user) return Astro.redirect('/login')
+
+const noteId = Number(Astro.params.id)
+const note = await env.DB.prepare('SELECT * FROM notes WHERE id = ? AND user_id = ?').bind(noteId, user.id).first()
+if (!note) return Astro.redirect('/dashboard')
+
+const course = await env.DB.prepare('SELECT id, name FROM courses WHERE id = ?').bind(note.course_id).first()
+const quizzes = await env.DB.prepare('SELECT * FROM quizzes WHERE note_id = ? ORDER BY created_at DESC').bind(noteId).all()
+---
+<BaseLayout title={note.title as string} user={user}>
+  <a href={`/courses/${note.course_id}`} style="color:var(--text-secondary);text-decoration:none;font-size:14px;display:inline-block;margin-bottom:20px;">← Back to {course?.name}</a>
+
+  <div class="card" style="margin-bottom:24px;">
+    <h1 style="font-size:24px;font-weight:700;margin-bottom:4px;">{note.title}</h1>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">{course?.name}</p>
+    <div style="font-size:14px;line-height:1.7;white-space:pre-wrap;color:var(--text);">
+      {note.content}
+    </div>
+  </div>
+
+  {note.ai_summary && (
+    <div class="card" style="margin-bottom:24px;border-left:4px solid var(--primary);">
+      <h2 style="font-size:16px;font-weight:600;margin-bottom:8px;">AI Summary</h2>
+      <p style="font-size:14px;line-height:1.6;color:var(--text-secondary);">{note.ai_summary}</p>
+    </div>
+  )}
+
+  <section>
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">Quizzes from this Note</h2>
+    {quizzes.results.length === 0 ? (
+      <div class="card empty-state">
+        <p>No quizzes yet. <a href={`/api/notes/generate-quiz?note_id=${note.id}`} style="color:var(--primary);">Generate a quiz</a> from this note.</p>
+      </div>
+    ) : (
+      <div class="grid grid-2">
+        {quizzes.results.map((q: any) => (
+          <a href={`/quizzes/${q.id}`} class="card" style="text-decoration:none;color:inherit;cursor:pointer;display:block;">
+            <h3 style="font-size:15px;font-weight:600;">{q.title}</h3>
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
+</BaseLayout>

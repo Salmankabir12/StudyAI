@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getEnv } from '../lib/db'
+import { getSessionUser } from '../lib/auth'
+const env = getEnv(Astro)
+const sessionId = Astro.cookies.get('session')?.value
+const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
+---
+<BaseLayout title="Study Smarter with AI" user={user}>
+  <section style="text-align:center;padding:80px 0 60px;">
+    <h1 style="font-size:48px;font-weight:800;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+      Study Smarter with AI
+    </h1>
+    <p style="font-size:18px;color:var(--text-secondary);max-width:600px;margin:0 auto 32px;">
+      Upload your notes, get AI-generated summaries and quizzes. Track your courses and predict your grades.
+    </p>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <a href="/register" class="btn btn-primary" style="font-size:16px;padding:14px 32px;">Get Started Free</a>
+      <a href="/login" class="btn btn-outline" style="font-size:16px;padding:14px 32px;">Sign In</a>
+    </div>
+  </section>
+
+  <section class="grid grid-3" style="margin-top:40px;">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:12px;">📝</div>
+      <h3 style="font-size:18px;margin-bottom:8px;">AI Summaries</h3>
+      <p style="font-size:14px;color:var(--text-secondary);">Paste your notes and get instant AI summaries highlighting key concepts.</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:12px;">🧠</div>
+      <h3 style="font-size:18px;margin-bottom:8px;">Smart Quizzes</h3>
+      <p style="font-size:14px;color:var(--text-secondary);">Auto-generated multiple choice questions to test your understanding.</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:12px;">📊</div>
+      <h3 style="font-size:18px;margin-bottom:8px;">Grade Predictor</h3>
+      <p style="font-size:14px;color:var(--text-secondary);">Track courses, set targets, and get what-if predictions.</p>
+    </div>
+  </section>
+</BaseLayout>

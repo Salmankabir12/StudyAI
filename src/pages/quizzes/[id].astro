@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getEnv } from '../../lib/db'
+import { getSessionUser } from '../../lib/auth'
+const env = getEnv(Astro)
+const sessionId = Astro.cookies.get('session')?.value
+const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
+if (!user) return Astro.redirect('/login')
+
+const quizId = Number(Astro.params.id)
+const quiz = await env.DB.prepare('SELECT * FROM quizzes WHERE id = ? AND user_id = ?').bind(quizId, user.id).first()
+if (!quiz) return Astro.redirect('/dashboard')
+
+const course = await env.DB.prepare('SELECT name FROM courses WHERE id = ?').bind(quiz.course_id).first()
+const questions = await env.DB.prepare('SELECT * FROM questions WHERE quiz_id = ?').bind(quizId).all()
+const lastAttempt = await env.DB.prepare('SELECT * FROM attempts WHERE quiz_id = ? AND user_id = ? ORDER BY completed_at DESC LIMIT 1').bind(quizId, user.id).first()
+---
+<BaseLayout title={quiz.title as string} user={user}>
+  <a href={`/courses/${quiz.course_id}`} style="color:var(--text-secondary);text-decoration:none;font-size:14px;display:inline-block;margin-bottom:20px;">← Back to {course?.name}</a>
+
+  <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:24px;">
+    <div>
+      <h1 style="font-size:24px;font-weight:700;">{quiz.title}</h1>
+      <p style="color:var(--text-secondary);font-size:14px;">{questions.results.length} questions</p>
+    </div>
+    {lastAttempt && (
+      <div class="card" style="text-align:center;padding:16px 24px;">
+        <div style="font-size:28px;font-weight:800;">{Math.round(Number(lastAttempt.score) / Number(lastAttempt.total) * 100)}%</div>
+        <div style="font-size:13px;color:var(--text-secondary);">Last attempt</div>
+        <div style="font-size:12px;color:var(--text-secondary);">{lastAttempt.score}/{lastAttempt.total}</div>
+      </div>
+    )}
+  </div>
+
+  {questions.results.length === 0 ? (
+    <div class="card empty-state">
+      <p>No questions in this quiz yet.</p>
+    </div>
+  ) : (
+    <form id="quiz-form" method="POST" action="/api/quizzes/submit" data-qcount={questions.results.length}>
+      <input type="hidden" name="quiz_id" value={quiz.id} />
+      {questions.results.map((q: any, i: number) => {
+        const options = JSON.parse(q.options as string)
+        return (
+          <div class="card" style="margin-bottom:16px;">
+            <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;">{i + 1}. {q.question_text}</h3>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              {options.map((opt: string, oi: number) => (
+                <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.2s;font-size:14px;">
+                  <input type="radio" name={`q_${q.id}`} value={opt} required style="width:auto;" />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:16px;padding:14px;">
+        Submit Quiz
+      </button>
+    </form>
+  )}
+
+  <script>
+    document.getElementById('quiz-form')?.addEventListener('submit', function(e) {
+      const count = parseInt(this.dataset.qcount)
+      const checked = this.querySelectorAll('input[type="radio"]:checked')
+      if (checked.length < count) {
+        e.preventDefault()
+        alert('Please answer all questions before submitting.')
+      }
+    })
+  </script>
+</BaseLayout>

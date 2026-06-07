@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getEnv } from '../../lib/db'
+import { getSessionUser } from '../../lib/auth'
+const env = getEnv(Astro)
+const sessionId = Astro.cookies.get('session')?.value
+const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
+if (!user) return Astro.redirect('/login')
+
+const courseId = Number(Astro.url.searchParams.get('course'))
+const course = courseId ? await env.DB.prepare('SELECT * FROM courses WHERE id = ? AND user_id = ?').bind(courseId, user.id).first() : null
+const courses = await env.DB.prepare('SELECT id, name FROM courses WHERE user_id = ? ORDER BY name').bind(user.id).all()
+---
+<BaseLayout title="New Note" user={user}>
+  <div style="max-width:700px;margin:0 auto;">
+    <a href={course ? `/courses/${course.id}` : '/dashboard'} style="color:var(--text-secondary);text-decoration:none;font-size:14px;display:inline-block;margin-bottom:20px;">← Back</a>
+    <div class="card">
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;">New Note</h2>
+      <p style="color:var(--text-secondary);font-size:14px;margin-bottom:20px;">Paste your study notes below. AI will generate a summary and quiz automatically.</p>
+      <form method="POST" action="/api/notes">
+        <input type="hidden" name="course_id" value={course?.id || 0} />
+        <div class="form-group">
+          <label>Course</label>
+          <select name="course_id" required>
+            <option value="">Select a course</option>
+            {courses.results.map((c: any) => (
+              <option value={c.id} selected={c.id === courseId}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Note Title</label>
+          <input type="text" name="title" placeholder="e.g., Chapter 5: Sorting Algorithms" required />
+        </div>
+        <div class="form-group">
+          <label>Note Content</label>
+          <textarea name="content" placeholder="Paste your study notes here..." style="min-height:300px;" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Save & Generate AI Content</button>
+      </form>
+    </div>
+  </div>
+</BaseLayout>

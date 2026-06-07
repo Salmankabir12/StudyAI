@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getEnv } from '../lib/db'
+import { getSessionUser } from '../lib/auth'
+
+const env = getEnv(Astro)
+const sessionId = Astro.cookies.get('session')?.value
+const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
+if (!user) return Astro.redirect('/login')
+
+const courses = await env.DB.prepare('SELECT * FROM courses WHERE user_id = ? ORDER BY created_at DESC').bind(user.id).all()
+const suggestions = await env.DB.prepare('SELECT * FROM suggestions WHERE user_id = ? AND acted_upon = 0 ORDER BY created_at DESC LIMIT 3').bind(user.id).all()
+
+const totalQuizzes = await env.DB.prepare('SELECT COUNT(*) as count FROM attempts WHERE user_id = ?').bind(user.id).first()
+const avgScore = await env.DB.prepare('SELECT COALESCE(ROUND(AVG(CAST(score AS FLOAT) / total * 100)), 0) as avg FROM attempts WHERE user_id = ?').bind(user.id).first()
+---
+<BaseLayout title="Dashboard" user={user}>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <h1 style="font-size:28px;font-weight:700;">Welcome, {user.name}</h1>
+      <p style="color:var(--text-secondary);font-size:14px;">
+        {courses.results.length} courses · {totalQuizzes?.count || 0} quizzes taken · Avg score: {Math.round(Number(avgScore?.avg || 0))}%
+      </p>
+    </div>
+    <a href="/courses/new" class="btn btn-primary">+ New Course</a>
+  </div>
+
+  {suggestions.results.length > 0 && (
+    <section style="margin-bottom:32px;">
+      <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">💡 Suggestions</h2>
+      <div class="grid grid-2">
+        {suggestions.results.map((s: any) => (
+          <div class="card" style="border-left:4px solid var(--accent);">
+            <h3 style="font-size:15px;font-weight:600;margin-bottom:4px;">{s.title}</h3>
+            <p style="font-size:13px;color:var(--text-secondary);">{s.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section>
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">Your Courses</h2>
+    {courses.results.length === 0 ? (
+      <div class="empty-state card">
+        <div style="font-size:48px;margin-bottom:12px;">📚</div>
+        <h3>No courses yet</h3>
+        <p style="margin-bottom:20px;">Add your first course to start tracking your studies.</p>
+        <a href="/courses/new" class="btn btn-primary">Add Course</a>
+      </div>
+    ) : (
+      <div class="grid grid-2">
+        {courses.results.map(async (c: any) => {
+          const notesCount = await env.DB.prepare('SELECT COUNT(*) as count FROM notes WHERE course_id = ?').bind(c.id).first()
+          const quizzesCount = await env.DB.prepare('SELECT COUNT(*) as count FROM quizzes WHERE course_id = ?').bind(c.id).first()
+          const gradeClass = c.current_grade ? `grade-${c.current_grade}` : ''
+          return (
+            <a href={`/courses/${c.id}`} class="card" style="text-decoration:none;color:inherit;transition:transform 0.2s;cursor:pointer;display:block;">
+              <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+                <h3 style="font-size:17px;font-weight:600;">{c.name}</h3>
+                {c.current_grade && <span class={`tag ${gradeClass}`} style="font-size:16px;font-weight:700;background:transparent;">{c.current_grade}</span>}
+              </div>
+              <div style="display:flex;gap:16px;font-size:13px;color:var(--text-secondary);">
+                <span>📝 {notesCount?.count || 0} notes</span>
+                <span>🧠 {quizzesCount?.count || 0} quizzes</span>
+                <span>🎯 Target: {c.target_grade}</span>
+              </div>
+            </a>
+          )
+        })}
+      </div>
+    )}
+  </section>
+</BaseLayout>

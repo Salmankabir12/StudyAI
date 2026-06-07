@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getEnv } from '../lib/db'
+import { getSessionUser } from '../lib/auth'
+const env = getEnv(Astro)
+const sessionId = Astro.cookies.get('session')?.value
+const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
+if (!user) return Astro.redirect('/login')
+
+const courses = await env.DB.prepare('SELECT * FROM courses WHERE user_id = ? ORDER BY name').bind(user.id).all()
+const totalCredits = courses.results.reduce((sum: number, c: any) => sum + Number(c.credits), 0)
+const gradePoints: Record<string, number> = { 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 'D': 1.0, 'F': 0.0 }
+const currentGPA = courses.results.reduce((sum: number, c: any) => {
+  if (!c.current_grade) return sum
+  return sum + (gradePoints[c.current_grade] || 0) * Number(c.credits)
+}, 0)
+const gradedCredits = courses.results.reduce((sum: number, c: any) => c.current_grade ? sum + Number(c.credits) : sum, 0)
+const gpa = gradedCredits > 0 ? (currentGPA / gradedCredits).toFixed(2) : '—'
+
+const recentAttempts = await env.DB.prepare(`
+  SELECT a.*, q.title as quiz_title, c.name as course_name
+  FROM attempts a JOIN quizzes q ON a.quiz_id = q.id
+  JOIN courses c ON q.course_id = c.id
+  WHERE a.user_id = ?
+  ORDER BY a.completed_at DESC LIMIT 10
+`).bind(user.id).all()
+---
+<BaseLayout title="Grades" user={user}>
+  <h1 style="font-size:28px;font-weight:700;margin-bottom:32px;">📊 Grades & GPA</h1>
+
+  <div class="grid grid-3" style="margin-bottom:32px;">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;font-weight:800;">{gpa}</div>
+      <div style="font-size:13px;color:var(--text-secondary);">Current GPA</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;font-weight:800;">{totalCredits}</div>
+      <div style="font-size:13px;color:var(--text-secondary);">Total Credits</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;font-weight:800;">{courses.results.length}</div>
+      <div style="font-size:13px;color:var(--text-secondary);">Courses</div>
+    </div>
+  </div>
+
+  <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">Course Grades</h2>
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:32px;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="background:var(--bg);">
+          <th style="text-align:left;padding:12px 20px;font-size:13px;font-weight:600;">Course</th>
+          <th style="text-align:left;padding:12px 20px;font-size:13px;font-weight:600;">Credits</th>
+          <th style="text-align:left;padding:12px 20px;font-size:13px;font-weight:600;">Target</th>
+          <th style="text-align:left;padding:12px 20px;font-size:13px;font-weight:600;">Current</th>
+          <th style="text-align:left;padding:12px 20px;font-size:13px;font-weight:600;">What-If</th>
+        </tr>
+      </thead>
+      <tbody>
+        {courses.results.map((c: any) => (
+          <tr style="border-top:1px solid var(--border);">
+            <td style="padding:12px 20px;font-size:14px;"><a href={`/courses/${c.id}`} style="color:var(--primary);text-decoration:none;">{c.name}</a></td>
+            <td style="padding:12px 20px;font-size:14px;">{c.credits}</td>
+            <td style="padding:12px 20px;font-size:14px;"><span class="tag">{c.target_grade}</span></td>
+            <td style="padding:12px 20px;font-size:14px;font-weight:600;" class={c.current_grade ? `grade-${c.current_grade}` : ''}>{c.current_grade || '—'}</td>
+            <td style="padding:12px 20px;font-size:14px;">
+              <form method="POST" action="/api/courses/grade" style="display:flex;gap:6px;">
+                <input type="hidden" name="course_id" value={c.id} />
+                <select name="grade" style="width:auto;padding:4px 8px;font-size:13px;">
+                  <option value="">—</option>
+                  {Object.keys(gradePoints).map(g => <option value={g} selected={g === c.current_grade}>{g}</option>)}
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm" style="padding:4px 10px;font-size:12px;">Update</button>
+              </form>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">Recent Quiz Results</h2>
+  {recentAttempts.results.length === 0 ? (
+    <div class="card empty-state"><p>No quiz attempts yet.</p></div>
+  ) : (
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:var(--bg);">
+            <th style="text-align:left;padding:12px 20px;font-size:13px;font-weight:600;">Quiz</th>
+            <th style="text-align:left;padding:12px 20px;font-size:13px;font-weight:600;">Course</th>
+            <th style="text-align:left;padding:12px 20px;font-size:13px;font-weight:600;">Score</th>
+            <th style="text-align:left;padding:12px 20px;font-size:13px;font-weight:600;">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {recentAttempts.results.map((a: any) => (
+            <tr style="border-top:1px solid var(--border);">
+              <td style="padding:12px 20px;font-size:14px;">{a.quiz_title}</td>
+              <td style="padding:12px 20px;font-size:14px;color:var(--text-secondary);">{a.course_name}</td>
+              <td style="padding:12px 20px;font-size:14px;font-weight:600;">{a.score}/{a.total}</td>
+              <td style="padding:12px 20px;font-size:14px;color:var(--text-secondary);">{a.completed_at}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+
+  <div class="card" style="margin-top:24px;">
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:8px;">🔮 What-If Prediction</h3>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Set your current grades above and see your GPA change in real time. If you get an A in all remaining courses, your GPA would be...</p>
+    <p style="font-size:13px;color:var(--text-secondary);">
+      Target everything A: <strong>4.0</strong> · Target everything B: <strong>3.0</strong>
+    </p>
+  </div>
+</BaseLayout>
