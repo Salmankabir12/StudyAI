@@ -38,7 +38,8 @@ export const POST: APIRoute = async (context) => {
       })
       const sugText = (sugResult as any).response || '{}'
       const cleaned = sugText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      const sug = JSON.parse(cleaned)
+      let sug: any = {}
+      try { sug = JSON.parse(cleaned) } catch { sug = { title: 'Review weak areas', description: `Focus on topics from the quiz where you scored ${percent}%. Re-read your notes and practice more.` } }
       await env.DB.prepare('INSERT INTO suggestions (user_id, course_id, type, title, description) VALUES (?, ?, ?, ?, ?)')
         .bind(user.id, quiz.course_id, 'weak_area', sug.title, sug.description).run()
     } catch {}

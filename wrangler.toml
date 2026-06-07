@@ -7,3 +7,6 @@ pages_build_output_dir = "./dist"
 binding = "DB"
 database_name = "studyai-db"
 database_id = "c99d59bb-b561-408e-b571-e5a6edbd4645"
+
+[ai]
+binding = "AI"
