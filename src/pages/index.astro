@@ -7,34 +7,34 @@ const sessionId = Astro.cookies.get('session')?.value
 const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
 ---
 <BaseLayout title="Study Smarter with AI" user={user}>
-  <section style="text-align:center;padding:80px 0 60px;">
-    <h1 style="font-size:48px;font-weight:800;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+  <section style="text-align:center;padding:96px 0 64px;">
+    <h1 style="font-size:48px;font-weight:700;line-height:1.1;margin-bottom:16px;background:linear-gradient(to right,#818cf8,#c084fc,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
       Study Smarter with AI
     </h1>
-    <p style="font-size:18px;color:var(--text-secondary);max-width:600px;margin:0 auto 32px;">
-      Upload your notes, get AI-generated summaries and quizzes. Track your courses and predict your grades.
+    <p style="font-size:16px;color:var(--text-muted);max-width:540px;margin:0 auto 32px;line-height:1.6;">
+      Turn your notes into summaries and quizzes instantly. Track courses, predict grades, and learn more effectively.
     </p>
-    <div style="display:flex;gap:12px;justify-content:center;">
-      <a href="/register" class="btn btn-primary" style="font-size:16px;padding:14px 32px;">Get Started Free</a>
-      <a href="/login" class="btn btn-outline" style="font-size:16px;padding:14px 32px;">Sign In</a>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="/register" class="btn btn-primary" style="padding:12px 32px;">Get Started Free</a>
+      <a href="/login" class="btn btn-outline" style="padding:12px 32px;">Sign In</a>
     </div>
   </section>
 
-  <section class="grid grid-3" style="margin-top:40px;">
-    <div class="card" style="text-align:center;">
+  <section class="grid grid-3" style="margin-top:64px;">
+    <div class="card" style="text-align:center;padding:24px;">
       <div style="font-size:36px;margin-bottom:12px;">📝</div>
-      <h3 style="font-size:18px;margin-bottom:8px;">AI Summaries</h3>
-      <p style="font-size:14px;color:var(--text-secondary);">Paste your notes and get instant AI summaries highlighting key concepts.</p>
+      <h3 style="font-size:18px;margin-bottom:8px;font-weight:600;">AI Summaries</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.6;">Paste your notes and get instant AI summaries highlighting key concepts and definitions.</p>
     </div>
-    <div class="card" style="text-align:center;">
+    <div class="card" style="text-align:center;padding:24px;">
       <div style="font-size:36px;margin-bottom:12px;">🧠</div>
-      <h3 style="font-size:18px;margin-bottom:8px;">Smart Quizzes</h3>
-      <p style="font-size:14px;color:var(--text-secondary);">Auto-generated multiple choice questions to test your understanding.</p>
+      <h3 style="font-size:18px;margin-bottom:8px;font-weight:600;">Smart Quizzes</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.6;">Auto-generated multiple choice questions to test your understanding of any topic.</p>
     </div>
-    <div class="card" style="text-align:center;">
+    <div class="card" style="text-align:center;padding:24px;">
       <div style="font-size:36px;margin-bottom:12px;">📊</div>
-      <h3 style="font-size:18px;margin-bottom:8px;">Grade Predictor</h3>
-      <p style="font-size:14px;color:var(--text-secondary);">Track courses, set targets, and get what-if predictions.</p>
+      <h3 style="font-size:18px;margin-bottom:8px;font-weight:600;">Grade Predictor</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.6;">Track courses, set targets, and get what-if predictions for your academic goals.</p>
     </div>
   </section>
 </BaseLayout>

@@ -16,18 +16,18 @@ const questions = await env.DB.prepare('SELECT * FROM questions WHERE quiz_id = 
 const lastAttempt = await env.DB.prepare('SELECT * FROM attempts WHERE quiz_id = ? AND user_id = ? ORDER BY completed_at DESC LIMIT 1').bind(quizId, user.id).first()
 ---
 <BaseLayout title={quiz.title as string} user={user}>
-  <a href={`/courses/${quiz.course_id}`} style="color:var(--text-secondary);text-decoration:none;font-size:14px;display:inline-block;margin-bottom:20px;">← Back to {course?.name}</a>
+  <a href={`/courses/${quiz.course_id}`} style="color:var(--text-muted);text-decoration:none;font-size:14px;display:inline-block;margin-bottom:24px;">← Back to {course?.name}</a>
 
-  <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:24px;">
+  <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:24px;flex-wrap:wrap;gap:16px;">
     <div>
-      <h1 style="font-size:24px;font-weight:700;">{quiz.title}</h1>
-      <p style="color:var(--text-secondary);font-size:14px;">{questions.results.length} questions</p>
+      <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;letter-spacing:-0.3px;">{quiz.title}</h1>
+      <p style="color:var(--text-muted);font-size:14px;">{questions.results.length} question{questions.results.length !== 1 ? 's' : ''}</p>
     </div>
     {lastAttempt && (
-      <div class="card" style="text-align:center;padding:16px 24px;">
-        <div style="font-size:28px;font-weight:800;">{Math.round(Number(lastAttempt.score) / Number(lastAttempt.total) * 100)}%</div>
-        <div style="font-size:13px;color:var(--text-secondary);">Last attempt</div>
-        <div style="font-size:12px;color:var(--text-secondary);">{lastAttempt.score}/{lastAttempt.total}</div>
+      <div class="card" style="text-align:center;padding:16px 24px;min-width:100px;">
+        <div style="font-size:32px;font-weight:700;color:var(--primary);">{Math.round(Number(lastAttempt.score) / Number(lastAttempt.total) * 100)}%</div>
+        <div style="font-size:12px;color:var(--text-muted);font-weight:500;">Last attempt</div>
+        <div style="font-size:11px;color:var(--text-muted);">{lastAttempt.score}/{lastAttempt.total}</div>
       </div>
     )}
   </div>
@@ -45,8 +45,8 @@ const lastAttempt = await env.DB.prepare('SELECT * FROM attempts WHERE quiz_id =
           <div class="card" style="margin-bottom:16px;">
             <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;">{i + 1}. {q.question_text}</h3>
             <div style="display:flex;flex-direction:column;gap:8px;">
-              {options.map((opt: string, oi: number) => (
-                <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.2s;font-size:14px;">
+              {options.map((opt: string) => (
+                <label style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.15s;font-size:14px;">
                   <input type="radio" name={`q_${q.id}`} value={opt} required style="width:auto;" />
                   {opt}
                 </label>
@@ -55,9 +55,11 @@ const lastAttempt = await env.DB.prepare('SELECT * FROM attempts WHERE quiz_id =
           </div>
         )
       })}
-      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:16px;padding:14px;">
-        Submit Quiz
-      </button>
+      <div class="card" style="padding:16px 24px;">
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:16px;padding:12px;">
+          Submit Quiz
+        </button>
+      </div>
     </form>
   )}
 

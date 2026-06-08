@@ -12,11 +12,11 @@ const course = courseId ? await env.DB.prepare('SELECT * FROM courses WHERE id =
 const courses = await env.DB.prepare('SELECT id, name FROM courses WHERE user_id = ? ORDER BY name').bind(user.id).all()
 ---
 <BaseLayout title="New Note" user={user}>
-  <div style="max-width:700px;margin:0 auto;">
-    <a href={course ? `/courses/${course.id}` : '/dashboard'} style="color:var(--text-secondary);text-decoration:none;font-size:14px;display:inline-block;margin-bottom:20px;">← Back</a>
+  <div style="max-width:640px;margin:0 auto;">
+    <a href={course ? `/courses/${course.id}` : '/dashboard'} style="color:var(--text-muted);text-decoration:none;font-size:14px;display:inline-block;margin-bottom:24px;">← Back</a>
     <div class="card">
-      <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;">New Note</h2>
-      <p style="color:var(--text-secondary);font-size:14px;margin-bottom:20px;">Paste your study notes below. AI will generate a summary and quiz automatically.</p>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;">New Note</h2>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:24px;">Paste your study notes below. AI will generate a summary and quiz automatically.</p>
       <form method="POST" action="/api/notes">
         <input type="hidden" name="course_id" value={course?.id || 0} />
         <div class="form-group">

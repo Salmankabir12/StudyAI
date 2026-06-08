@@ -15,11 +15,12 @@ const totalQuizzes = await env.DB.prepare('SELECT COUNT(*) as count FROM attempt
 const avgScore = await env.DB.prepare('SELECT COALESCE(ROUND(AVG(CAST(score AS FLOAT) / total * 100)), 0) as avg FROM attempts WHERE user_id = ?').bind(user.id).first()
 ---
 <BaseLayout title="Dashboard" user={user}>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:16px;">
     <div>
-      <h1 style="font-size:28px;font-weight:700;">Welcome, {user.name}</h1>
-      <p style="color:var(--text-secondary);font-size:14px;">
-        {courses.results.length} courses · {totalQuizzes?.count || 0} quizzes taken · Avg score: {Math.round(Number(avgScore?.avg || 0))}%
+      <h1 style="font-size:30px;font-weight:700;letter-spacing:-0.5px;">Welcome back, {user.name}</h1>
+      <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">
+        {courses.results.length} course{courses.results.length !== 1 ? 's' : ''} · {totalQuizzes?.count || 0} quiz{totalQuizzes?.count !== 1 ? 'zes' : ''} taken
+        {avgScore?.avg ? ` · Avg score: ${Math.round(Number(avgScore.avg))}%` : ''}
       </p>
     </div>
     <a href="/courses/new" class="btn btn-primary">+ New Course</a>
@@ -27,12 +28,12 @@ const avgScore = await env.DB.prepare('SELECT COALESCE(ROUND(AVG(CAST(score AS F
 
   {suggestions.results.length > 0 && (
     <section style="margin-bottom:32px;">
-      <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">💡 Suggestions</h2>
+      <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">Suggestions</h2>
       <div class="grid grid-2">
         {suggestions.results.map((s: any) => (
-          <div class="card" style="border-left:4px solid var(--accent);">
+          <div class="card" style="border-left:3px solid #f59e0b;padding:20px;">
             <h3 style="font-size:15px;font-weight:600;margin-bottom:4px;">{s.title}</h3>
-            <p style="font-size:13px;color:var(--text-secondary);">{s.description}</p>
+            <p style="font-size:13px;color:var(--text-muted);">{s.description}</p>
           </div>
         ))}
       </div>
@@ -40,34 +41,31 @@ const avgScore = await env.DB.prepare('SELECT COALESCE(ROUND(AVG(CAST(score AS F
   )}
 
   <section>
-    <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">Your Courses</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-size:20px;font-weight:600;">Your Courses</h2>
+    </div>
     {courses.results.length === 0 ? (
       <div class="empty-state card">
-        <div style="font-size:48px;margin-bottom:12px;">📚</div>
+        <div style="font-size:48px;margin-bottom:12px;opacity:0.3;">📚</div>
         <h3>No courses yet</h3>
-        <p style="margin-bottom:20px;">Add your first course to start tracking your studies.</p>
+        <p style="margin-bottom:24px;">Add your first course to start creating notes and tracking your studies.</p>
         <a href="/courses/new" class="btn btn-primary">Add Course</a>
       </div>
     ) : (
       <div class="grid grid-2">
-        {courses.results.map(async (c: any) => {
-          const notesCount = await env.DB.prepare('SELECT COUNT(*) as count FROM notes WHERE course_id = ?').bind(c.id).first()
-          const quizzesCount = await env.DB.prepare('SELECT COUNT(*) as count FROM quizzes WHERE course_id = ?').bind(c.id).first()
-          const gradeClass = c.current_grade ? `grade-${c.current_grade}` : ''
-          return (
-            <a href={`/courses/${c.id}`} class="card" style="text-decoration:none;color:inherit;transition:transform 0.2s;cursor:pointer;display:block;">
-              <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
-                <h3 style="font-size:17px;font-weight:600;">{c.name}</h3>
-                {c.current_grade && <span class={`tag ${gradeClass}`} style="font-size:16px;font-weight:700;background:transparent;">{c.current_grade}</span>}
-              </div>
-              <div style="display:flex;gap:16px;font-size:13px;color:var(--text-secondary);">
-                <span>📝 {notesCount?.count || 0} notes</span>
-                <span>🧠 {quizzesCount?.count || 0} quizzes</span>
-                <span>🎯 Target: {c.target_grade}</span>
-              </div>
-            </a>
-          )
-        })}
+        {courses.results.map((c: any) => (
+          <a href={`/courses/${c.id}`} class="card" style="text-decoration:none;color:inherit;cursor:pointer;display:block;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+              <h3 style="font-size:17px;font-weight:600;">{c.name}</h3>
+              {c.current_grade && <span class="tag">{c.current_grade}</span>}
+            </div>
+            <div style="display:flex;gap:16px;font-size:13px;color:var(--text-muted);">
+              <span>📝 0 notes</span>
+              <span>🧠 0 quizzes</span>
+              <span>🎯 Target: {c.target_grade}</span>
+            </div>
+          </a>
+        ))}
       </div>
     )}
   </section>
