@@ -43,7 +43,8 @@ const suggestions = await env.DB.prepare('SELECT * FROM suggestions WHERE course
     </section>
   )}
 
-  <section style="margin-bottom:32px;">
+  <div class="section section-alt section:first">
+    <div class="constrained">
     <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Notes</h2>
     {notes.results.length === 0 ? (
       <div class="card empty-state">
@@ -65,9 +66,11 @@ const suggestions = await env.DB.prepare('SELECT * FROM suggestions WHERE course
         ))}
       </div>
     )}
-  </section>
+    </div>
+  </div>
 
-  <section>
+  <div class="section">
+    <div class="constrained">
     <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Quizzes</h2>
     {quizzes.results.length === 0 ? (
       <div class="card empty-state">
@@ -87,5 +90,6 @@ const suggestions = await env.DB.prepare('SELECT * FROM suggestions WHERE course
         ))}
       </div>
     )}
-  </section>
+    </div>
+  </div>
 </BaseLayout>

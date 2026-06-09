@@ -43,71 +43,83 @@ const recentAttempts = await env.DB.prepare(`
     </div>
   </div>
 
-  <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Course Grades</h2>
-  <div class="card" style="padding:0;overflow:hidden;margin-bottom:32px;">
-    <table style="width:100%;border-collapse:collapse;">
-      <thead>
-        <tr style="background:var(--surface-raised);">
-          <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Course</th>
-          <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Credits</th>
-          <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Target</th>
-          <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Current</th>
-          <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">What-If</th>
-        </tr>
-      </thead>
-      <tbody>
-        {courses.results.map((c: any) => (
-          <tr style="border-top:1px solid var(--border);">
-            <td style="padding:12px 20px;font-size:14px;"><a href={`/courses/${c.id}`} style="color:var(--primary);text-decoration:none;font-weight:500;">{c.name}</a></td>
-            <td style="padding:12px 20px;font-size:14px;color:var(--text-muted);">{c.credits}</td>
-            <td style="padding:12px 20px;"><span class="tag">{c.target_grade}</span></td>
-            <td style="padding:12px 20px;font-weight:600;" class={c.current_grade ? `grade-${c.current_grade}` : ''}>{c.current_grade || '—'}</td>
-            <td style="padding:12px 20px;">
-              <form method="POST" action="/api/courses/grade" style="display:flex;gap:6px;">
-                <input type="hidden" name="course_id" value={c.id} />
-                <select name="grade" style="width:auto;padding:4px 8px;font-size:13px;">
-                  <option value="">—</option>
-                  {Object.keys(gradePoints).map(g => <option value={g} selected={g === c.current_grade}>{g}</option>)}
-                </select>
-                <button type="submit" class="btn btn-primary btn-sm" style="padding:4px 10px;font-size:12px;">Update</button>
-              </form>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-
-  <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Recent Quiz Results</h2>
-  {recentAttempts.results.length === 0 ? (
-    <div class="card empty-state"><p>No quiz attempts yet.</p></div>
-  ) : (
-    <div class="card" style="padding:0;overflow:hidden;margin-bottom:32px;">
+  <div class="section section-alt section:first">
+    <div class="constrained">
+    <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Course Grades</h2>
+    <div class="card" style="padding:0;overflow:hidden;">
       <table style="width:100%;border-collapse:collapse;">
         <thead>
           <tr style="background:var(--surface-raised);">
-            <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Quiz</th>
             <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Course</th>
-            <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Score</th>
-            <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Date</th>
+            <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Credits</th>
+            <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Target</th>
+            <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Current</th>
+            <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">What-If</th>
           </tr>
         </thead>
         <tbody>
-          {recentAttempts.results.map((a: any) => (
+          {courses.results.map((c: any) => (
             <tr style="border-top:1px solid var(--border);">
-              <td style="padding:12px 20px;font-size:14px;font-weight:500;">{a.quiz_title}</td>
-              <td style="padding:12px 20px;font-size:14px;color:var(--text-muted);">{a.course_name}</td>
-              <td style="padding:12px 20px;font-weight:600;"><span class={Number(a.score) / Number(a.total) >= 0.7 ? 'grade-A' : Number(a.score) / Number(a.total) >= 0.5 ? 'grade-C' : 'grade-D'}>{a.score}/{a.total}</span></td>
-              <td style="padding:12px 20px;font-size:13px;color:var(--text-muted);">{a.completed_at}</td>
+              <td style="padding:12px 20px;font-size:14px;"><a href={`/courses/${c.id}`} style="color:var(--primary);text-decoration:none;font-weight:500;">{c.name}</a></td>
+              <td style="padding:12px 20px;font-size:14px;color:var(--text-muted);">{c.credits}</td>
+              <td style="padding:12px 20px;"><span class="tag">{c.target_grade}</span></td>
+              <td style="padding:12px 20px;font-weight:600;" class={c.current_grade ? `grade-${c.current_grade}` : ''}>{c.current_grade || '—'}</td>
+              <td style="padding:12px 20px;">
+                <form method="POST" action="/api/courses/grade" style="display:flex;gap:6px;">
+                  <input type="hidden" name="course_id" value={c.id} />
+                  <select name="grade" style="width:auto;padding:4px 8px;font-size:13px;">
+                    <option value="">—</option>
+                    {Object.keys(gradePoints).map(g => <option value={g} selected={g === c.current_grade}>{g}</option>)}
+                  </select>
+                  <button type="submit" class="btn btn-primary btn-sm" style="padding:4px 10px;font-size:12px;">Update</button>
+                </form>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-  )}
+    </div>
+  </div>
 
-  <div class="card">
-    <h3 style="font-size:16px;font-weight:600;margin-bottom:8px;">What-If Prediction</h3>
-    <p style="font-size:14px;color:var(--text-muted);line-height:1.6;">Set your current grades in the table above and see how your GPA changes. If you get an A in all courses, your GPA would be <strong style="color:var(--text-primary);">4.0</strong>. A B in everything gives you <strong style="color:var(--text-primary);">3.0</strong>.</p>
+  <div class="section">
+    <div class="constrained">
+    <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Recent Quiz Results</h2>
+    {recentAttempts.results.length === 0 ? (
+      <div class="card empty-state"><p>No quiz attempts yet.</p></div>
+    ) : (
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="background:var(--surface-raised);">
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Quiz</th>
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Course</th>
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Score</th>
+              <th style="text-align:left;padding:12px 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recentAttempts.results.map((a: any) => (
+              <tr style="border-top:1px solid var(--border);">
+                <td style="padding:12px 20px;font-size:14px;font-weight:500;">{a.quiz_title}</td>
+                <td style="padding:12px 20px;font-size:14px;color:var(--text-muted);">{a.course_name}</td>
+                <td style="padding:12px 20px;font-weight:600;"><span class={Number(a.score) / Number(a.total) >= 0.7 ? 'grade-A' : Number(a.score) / Number(a.total) >= 0.5 ? 'grade-C' : 'grade-D'}>{a.score}/{a.total}</span></td>
+                <td style="padding:12px 20px;font-size:13px;color:var(--text-muted);">{a.completed_at}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+    </div>
+  </div>
+
+  <div class="section section-alt">
+    <div class="constrained">
+    <div class="card">
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:8px;">What-If Prediction</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.6;">Set your current grades in the table above and see how your GPA changes. If you get an A in all courses, your GPA would be <strong style="color:var(--text-primary);">4.0</strong>. A B in everything gives you <strong style="color:var(--text-primary);">3.0</strong>.</p>
+    </div>
+    </div>
   </div>
 </BaseLayout>

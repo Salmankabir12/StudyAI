@@ -32,7 +32,8 @@ const quizzes = await env.DB.prepare('SELECT * FROM quizzes WHERE note_id = ? OR
     </div>
   )}
 
-  <section>
+  <div class="section section-alt section:first">
+    <div class="constrained">
     <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Quizzes</h2>
     {quizzes.results.length === 0 ? (
       <div class="card empty-state">
@@ -49,5 +50,6 @@ const quizzes = await env.DB.prepare('SELECT * FROM quizzes WHERE note_id = ? OR
         ))}
       </div>
     )}
-  </section>
+    </div>
+  </div>
 </BaseLayout>

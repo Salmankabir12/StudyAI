@@ -39,20 +39,23 @@ const avgScore = await env.DB.prepare('SELECT COALESCE(ROUND(AVG(CAST(score AS F
   </div>
 
   {suggestions.results.length > 0 && (
-    <section style="margin-bottom:32px;">
-      <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">Suggestions</h2>
-      <div class="grid grid-2">
-        {suggestions.results.map((s: any) => (
-          <div class="card" style="border-left:3px solid #f59e0b;padding:20px;">
-            <h3 style="font-size:15px;font-weight:600;margin-bottom:4px;">{s.title}</h3>
-            <p style="font-size:13px;color:var(--text-muted);">{s.description}</p>
-          </div>
-        ))}
+    <div class="section section-alt section:first">
+      <div class="constrained">
+        <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">Suggestions</h2>
+        <div class="grid grid-2">
+          {suggestions.results.map((s: any) => (
+            <div class="card" style="border-left:3px solid #f59e0b;padding:20px;">
+              <h3 style="font-size:15px;font-weight:600;margin-bottom:4px;">{s.title}</h3>
+              <p style="font-size:13px;color:var(--text-muted);">{s.description}</p>
+            </div>
+          ))}
+        </div>
       </div>
-    </section>
+    </div>
   )}
 
-  <section>
+  <div class="section">
+    <div class="constrained">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
       <h2 style="font-size:20px;font-weight:600;">Your Courses</h2>
     </div>
@@ -80,5 +83,6 @@ const avgScore = await env.DB.prepare('SELECT COALESCE(ROUND(AVG(CAST(score AS F
         ))}
       </div>
     )}
-  </section>
+    </div>
+  </div>
 </BaseLayout>

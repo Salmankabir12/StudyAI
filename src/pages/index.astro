@@ -23,8 +23,8 @@ const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
     </div>
   </section>
 
-  <div style="background:var(--surface-raised);border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:0 -24px;padding:64px 24px;">
-    <section class="grid grid-3" style="max-width:1152px;margin:0 auto;">
+  <div class="section section-alt">
+    <div class="constrained grid grid-3">
       <div class="card" style="text-align:center;position:relative;overflow:hidden;">
         <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,#6366f1,#818cf8);"></div>
         <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#818cf8);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
@@ -49,6 +49,6 @@ const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
         <h3 style="font-size:18px;margin-bottom:8px;font-weight:600;">Grade Predictor</h3>
         <p style="font-size:14px;color:var(--text-muted);line-height:1.6;">Track courses, set targets, and get what-if predictions for your academic goals.</p>
       </div>
-    </section>
+    </div>
   </div>
 </BaseLayout>
