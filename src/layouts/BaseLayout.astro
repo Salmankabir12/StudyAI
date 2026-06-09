@@ -92,6 +92,10 @@ const { title, user } = Astro.props
       font-weight: 500; background: var(--tag); color: var(--tag-text);
     }
     .theme-icon { display: inline-block; }
+    .animate-pulse { animation: pulse 3s ease-in-out infinite; }
+    .animate-gradient { animation: gradient-shift 4s ease infinite; background-size: 200% 200%; }
+    @keyframes pulse { 0%,100% { opacity: 0.15; } 50% { opacity: 0.25; } }
+    @keyframes gradient-shift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
     .grade-A { color: #22c55e; } .grade-B { color: #6366f1; } .grade-C { color: #f59e0b; } .grade-D, .grade-F { color: #ef4444; }
     .section { margin: 0 -24px; padding: 48px 24px; }
     .section\:first { margin-top: -40px; padding-top: 40px; }
