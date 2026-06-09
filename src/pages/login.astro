@@ -4,53 +4,42 @@ const message = Astro.url.searchParams.get('message') || ''
 const error = Astro.url.searchParams.get('error') || ''
 ---
 <BaseLayout title="Login">
-  <div style="max-width:860px;margin:40px auto;display:grid;grid-template-columns:1fr 1fr;border-radius:12px;border:1px solid var(--border);overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-    <div style="background:linear-gradient(135deg,#0f172a,#1e293b);padding:48px 36px;display:flex;flex-direction:column;justify-content:center;">
-      <div style="font-size:28px;font-weight:700;margin-bottom:8px;background:linear-gradient(to right,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">StudyAI</div>
-      <p style="color:#94a3b8;font-size:14px;margin-bottom:32px;line-height:1.6;">AI-powered study tools to help you learn faster and track your progress.</p>
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:rgba(99,102,241,0.2);display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
-          <div><div style="color:#f1f5f9;font-size:14px;font-weight:500;">AI Summaries</div><div style="color:#64748b;font-size:12px;">Instant notes summarization</div></div>
+  <div style="min-height:calc(100vh - 200px);display:flex;align-items:center;justify-content:center;">
+    <div style="max-width:400px;width:100%;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#4f46e5,#e11d48);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;box-shadow:0 8px 32px rgba(79,70,229,0.25);">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:rgba(168,85,247,0.2);display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
-          <div><div style="color:#f1f5f9;font-size:14px;font-weight:500;">Smart Quizzes</div><div style="color:#64748b;font-size:12px;">Auto-generated from your notes</div></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="width:32px;height:32px;border-radius:8px;background:rgba(6,182,212,0.2);display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-          <div><div style="color:#f1f5f9;font-size:14px;font-weight:500;">Grade Predictor</div><div style="color:#64748b;font-size:12px;">Track & predict your GPA</div></div>
-        </div>
+        <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;">Welcome back</h2>
+        <p style="color:var(--text-muted);font-size:14px;">Sign in to your StudyAI account</p>
       </div>
-    </div>
-    <div style="padding:48px 36px;background:var(--surface-elevated);">
-      <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;">Welcome back</h2>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:28px;">Sign in to your account</p>
-      {message && <div style="padding:10px 14px;border-radius:8px;background:#ecfdf5;color:#065f46;font-size:14px;margin-bottom:16px;border:1px solid #a7f3d0;">{message}</div>}
-      {error && <div style="padding:10px 14px;border-radius:8px;background:#fef2f2;color:#991b1b;font-size:14px;margin-bottom:16px;border:1px solid #fecaca;">{error}</div>}
-      <form method="POST" action="/api/auth/login" id="login-form">
-        <div class="form-group">
-          <label>Email</label>
-          <div class="input-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            <input type="email" name="email" placeholder="you@example.com" required />
+      <div class="card" style="border-color:#e2e8f0;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+        {message && <div style="padding:10px 14px;border-radius:8px;background:#ecfdf5;color:#065f46;font-size:14px;margin-bottom:16px;border:1px solid #a7f3d0;">{message}</div>}
+        {error && <div style="padding:10px 14px;border-radius:8px;background:#fef2f2;color:#991b1b;font-size:14px;margin-bottom:16px;border:1px solid #fecaca;">{error}</div>}
+        <form method="POST" action="/api/auth/login" id="login-form">
+          <div class="form-group">
+            <label>Email</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <input type="email" name="email" placeholder="you@example.com" required />
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <div class="input-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <input type="password" name="password" placeholder="Enter your password" required id="login-password" />
-            <button type="button" id="login-pw-toggle" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;padding:4px;color:var(--text-muted);line-height:1;" tabindex="-1" onclick="togglePassword()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" name="password" placeholder="Enter your password" required id="login-password" />
+              <button type="button" id="login-pw-toggle" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;padding:4px;color:var(--text-muted);line-height:1;" tabindex="-1" onclick="togglePassword()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;" id="login-submit">Sign In</button>
-      </form>
-      <p style="text-align:center;font-size:14px;color:var(--text-muted);margin-top:24px;">
-        Don't have an account? <a href="/register" style="color:var(--primary);text-decoration:none;font-weight:500;">Create one</a>
-      </p>
+          <button type="submit" class="btn btn-primary-alt" style="width:100%;justify-content:center;padding:12px;" id="login-submit">Sign In</button>
+        </form>
+        <p style="text-align:center;font-size:14px;color:var(--text-muted);margin-top:20px;">
+          Don't have an account? <a href="/register" style="color:#e11d48;text-decoration:none;font-weight:500;">Create one</a>
+        </p>
+      </div>
     </div>
   </div>
 
