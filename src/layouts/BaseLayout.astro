@@ -98,12 +98,16 @@ const { title, user } = Astro.props
     .empty-state { text-align: center; padding: 60px 24px; color: var(--text-muted); }
     .empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text-primary); }
     .empty-state a { color: #6366f1; font-weight: 500; }
-    footer { width: 100%; background: var(--surface-elevated); border-top: 1px solid var(--border); margin-top: 48px; padding: 32px 0; }
-    footer .inner { max-width: 1152px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    footer .copy { color: var(--text-muted); font-size: 14px; }
-    footer .links { display: flex; gap: 16px; align-items: center; }
-    footer .links a { color: var(--text-muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
-    footer .links a:hover { color: var(--text-primary); }
+    footer { width: 100%; background: var(--surface-elevated); border-top: 1px solid var(--border); margin-top: 48px; padding: 40px 0 32px; }
+    footer .inner { max-width: 1152px; margin: 0 auto; padding: 0 24px; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 32px; }
+    footer .brand { flex: 1; min-width: 200px; }
+    footer .brand .name { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
+    footer .brand .tagline { font-size: 13px; color: var(--text-muted); max-width: 260px; line-height: 1.5; }
+    footer .col { display: flex; flex-direction: column; gap: 8px; }
+    footer .col h4 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px; }
+    footer .col a { color: var(--text-secondary); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+    footer .col a:hover { color: var(--text-primary); }
+    footer .bottom { border-top: 1px solid var(--border); margin-top: 32px; padding-top: 20px; text-align: center; color: var(--text-muted); font-size: 13px; }
     @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -136,19 +140,33 @@ const { title, user } = Astro.props
 
   <footer>
     <div class="inner">
-      <div class="copy">StudyAI — Study smarter with AI</div>
-      <div class="links">
+      <div class="brand">
+        <div class="name">StudyAI</div>
+        <div class="tagline">Study smarter with AI — turn notes into summaries, quizzes, and grade predictions instantly.</div>
+      </div>
+      <div class="col">
+        <h4>Product</h4>
         {user ? (
           <a href="/dashboard">Dashboard</a>
         ) : (
           <>
+            <a href="/">Home</a>
             <a href="/login">Login</a>
             <a href="/register">Register</a>
           </>
         )}
+      </div>
+      <div class="col">
+        <h4>Resources</h4>
+        <a href="/grades">Grades</a>
+        <a href="/courses/new">New Course</a>
+      </div>
+      <div class="col">
+        <h4>Connect</h4>
         <a href="https://github.com/Salmankabir12/StudyAI" target="_blank">GitHub</a>
       </div>
     </div>
+    <div class="bottom">StudyAI &copy; {new Date().getFullYear()}</div>
   </footer>
 
   <script>
