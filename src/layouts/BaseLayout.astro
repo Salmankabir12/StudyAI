@@ -89,16 +89,17 @@ const { title, user } = Astro.props
       display: inline-flex; padding: 4px 8px; border-radius: 4px; font-size: 12px;
       font-weight: 500; background: var(--tag); color: var(--tag-text);
     }
-    .hidden { display: none; }
-    .dark\:hidden { }
-    .dark .dark\:hidden { display: none; }
-    .hidden.dark\:inline { }
-    .dark .hidden.dark\:inline { display: inline; }
+    .theme-icon { display: inline-block; }
     .grade-A { color: #22c55e; } .grade-B { color: #6366f1; } .grade-C { color: #f59e0b; } .grade-D, .grade-F { color: #ef4444; }
     .empty-state { text-align: center; padding: 60px 24px; color: var(--text-muted); }
     .empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text-primary); }
     .empty-state a { color: #6366f1; font-weight: 500; }
-    footer { width: 100%; background: var(--surface-elevated); border-top: 1px solid var(--border); margin-top: 48px; padding: 24px 0; text-align: center; color: var(--text-muted); font-size: 14px; }
+    footer { width: 100%; background: var(--surface-elevated); border-top: 1px solid var(--border); margin-top: 48px; padding: 32px 0; }
+    footer .inner { max-width: 1152px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    footer .copy { color: var(--text-muted); font-size: 14px; }
+    footer .links { display: flex; gap: 16px; align-items: center; }
+    footer .links a { color: var(--text-muted); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+    footer .links a:hover { color: var(--text-primary); }
     @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -120,7 +121,7 @@ const { title, user } = Astro.props
             <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
           </>
         )}
-        <button class="theme-toggle" onclick="toggleTheme()"><span class="dark:hidden">🌙</span><span class="hidden dark:inline">☀️</span></button>
+        <button class="theme-toggle" onclick="toggleTheme()"><span class="theme-icon" id="theme-icon">🌙</span></button>
       </div>
     </div>
   </nav>
@@ -130,14 +131,35 @@ const { title, user } = Astro.props
   </main>
 
   <footer>
-    <div style="max-width:1152px;margin:0 auto;padding:0 24px;">StudyAI — Study smarter with AI</div>
+    <div class="inner">
+      <div class="copy">StudyAI — Study smarter with AI</div>
+      <div class="links">
+        {user ? (
+          <a href="/dashboard">Dashboard</a>
+        ) : (
+          <>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+          </>
+        )}
+        <a href="https://github.com/Salmankabir12/StudyAI" target="_blank">GitHub</a>
+      </div>
+    </div>
   </footer>
 
   <script>
+    (function() {
+      const icon = document.getElementById('theme-icon');
+      if (icon && document.documentElement.classList.contains('dark')) {
+        icon.textContent = '☀️';
+      }
+    })();
     function toggleTheme() {
       const root = document.documentElement;
       const isDark = root.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      const icon = document.getElementById('theme-icon');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
     }
   </script>
 </body>

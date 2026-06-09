@@ -9,6 +9,18 @@ const user = sessionId ? await getSessionUser(env.DB, sessionId) : null
 if (!user) return Astro.redirect('/login')
 
 const courses = await env.DB.prepare('SELECT * FROM courses WHERE user_id = ? ORDER BY created_at DESC').bind(user.id).all()
+
+const courseIds = courses.results.map((c: any) => c.id)
+let counts: Record<number, { notes: number; quizzes: number }> = {}
+if (courseIds.length > 0) {
+  const placeholders = courseIds.map(() => '?').join(',')
+  const noteCounts = await env.DB.prepare(`SELECT course_id, COUNT(*) as count FROM notes WHERE course_id IN (${placeholders}) GROUP BY course_id`).bind(...courseIds).all()
+  const quizCounts = await env.DB.prepare(`SELECT course_id, COUNT(*) as count FROM quizzes WHERE course_id IN (${placeholders}) GROUP BY course_id`).bind(...courseIds).all()
+  for (const id of courseIds) counts[id] = { notes: 0, quizzes: 0 }
+  for (const r of noteCounts.results) counts[r.course_id].notes = r.count
+  for (const r of quizCounts.results) counts[r.course_id].quizzes = r.count
+}
+
 const suggestions = await env.DB.prepare('SELECT * FROM suggestions WHERE user_id = ? AND acted_upon = 0 ORDER BY created_at DESC LIMIT 3').bind(user.id).all()
 
 const totalQuizzes = await env.DB.prepare('SELECT COUNT(*) as count FROM attempts WHERE user_id = ?').bind(user.id).first()
@@ -60,8 +72,8 @@ const avgScore = await env.DB.prepare('SELECT COALESCE(ROUND(AVG(CAST(score AS F
               {c.current_grade && <span class="tag">{c.current_grade}</span>}
             </div>
             <div style="display:flex;gap:16px;font-size:13px;color:var(--text-muted);">
-              <span>📝 0 notes</span>
-              <span>🧠 0 quizzes</span>
+              <span>📝 {counts[c.id]?.notes || 0} note{(counts[c.id]?.notes || 0) !== 1 ? 's' : ''}</span>
+              <span>🧠 {counts[c.id]?.quizzes || 0} quiz{(counts[c.id]?.quizzes || 0) !== 1 ? 'zes' : ''}</span>
               <span>🎯 Target: {c.target_grade}</span>
             </div>
           </a>
