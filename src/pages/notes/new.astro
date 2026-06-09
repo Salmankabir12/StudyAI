@@ -12,31 +12,36 @@ const course = courseId ? await env.DB.prepare('SELECT * FROM courses WHERE id =
 const courses = await env.DB.prepare('SELECT id, name FROM courses WHERE user_id = ? ORDER BY name').bind(user.id).all()
 ---
 <BaseLayout title="New Note" user={user}>
-  <div style="max-width:640px;margin:0 auto;">
+  <div style="max-width:560px;margin:0 auto;">
     <a href={course ? `/courses/${course.id}` : '/dashboard'} style="color:var(--text-muted);text-decoration:none;font-size:14px;display:inline-block;margin-bottom:24px;">← Back</a>
-    <div class="card">
-      <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;">New Note</h2>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:24px;">Paste your study notes below. AI will generate a summary and quiz automatically.</p>
+    <div style="background:var(--surface-elevated);border:1px solid var(--border);border-radius:16px;padding:36px;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#06b6d4);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;">New Note</h2>
+        <p style="color:var(--text-muted);font-size:14px;">Paste your study notes below. AI will generate a summary and quiz.</p>
+      </div>
       <form method="POST" action="/api/notes">
         <input type="hidden" name="course_id" value={course?.id || 0} />
-        <div class="form-group">
+        <div style="margin-bottom:14px;">
           <label>Course</label>
-          <select name="course_id" required>
+          <select name="course_id" required style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-raised);color:var(--text-primary);font-size:14px;font-family:inherit;transition:border-color 0.2s;outline:none;">
             <option value="">Select a course</option>
             {courses.results.map((c: any) => (
               <option value={c.id} selected={c.id === courseId}>{c.name}</option>
             ))}
           </select>
         </div>
-        <div class="form-group">
+        <div style="margin-bottom:14px;">
           <label>Note Title</label>
-          <input type="text" name="title" placeholder="e.g., Chapter 5: Sorting Algorithms" required />
+          <input type="text" name="title" placeholder="e.g., Chapter 5: Sorting Algorithms" required style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-raised);color:var(--text-primary);font-size:14px;font-family:inherit;transition:border-color 0.2s,box-shadow 0.2s;outline:none;" onfocus="this.style.borderColor='#6366f1';this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'" />
         </div>
-        <div class="form-group">
+        <div style="margin-bottom:20px;">
           <label>Note Content</label>
-          <textarea name="content" placeholder="Paste your study notes here..." style="min-height:300px;" required></textarea>
+          <textarea name="content" placeholder="Paste your study notes here..." required style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-raised);color:var(--text-primary);font-size:14px;font-family:inherit;min-height:280px;resize:vertical;transition:border-color 0.2s,box-shadow 0.2s;outline:none;" onfocus="this.style.borderColor='#6366f1';this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'" onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Save & Generate AI Content</button>
+        <button type="submit" style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(to right,#6366f1,#06b6d4);color:white;font-size:15px;font-weight:600;cursor:pointer;transition:opacity 0.2s;box-shadow:0 4px 16px rgba(99,102,241,0.25);font-family:inherit;">Save & Generate AI Content</button>
       </form>
     </div>
   </div>
