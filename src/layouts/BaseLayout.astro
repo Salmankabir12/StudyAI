@@ -2,9 +2,10 @@
 interface Props {
   title: string
   user?: { id: number; name: string; email: string } | null
+  hideUI?: boolean
 }
 
-const { title, user } = Astro.props
+const { title, user, hideUI } = Astro.props
 ---
 
 <!DOCTYPE html>
@@ -124,8 +125,8 @@ const { title, user } = Astro.props
     @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
   </style>
 </head>
-<body>
-  <nav>
+<body style={hideUI ? 'background:linear-gradient(135deg,#0f0c29,#1a0533,#302b63,#24243e);min-height:100vh;' : ''}>
+  {!hideUI && <nav>
     <div class="inner">
       <a href="/" class="logo">📚 <span>StudyAI</span></a>
       <div class="nav-links">
@@ -145,13 +146,13 @@ const { title, user } = Astro.props
         <button class="theme-toggle" onclick="toggleTheme()"><span class="theme-icon" id="theme-icon">🌙</span></button>
       </div>
     </div>
-  </nav>
+  </nav>}
 
-  <main style="max-width:1152px;margin:0 auto;padding:40px 24px;flex:1;">
+  <main style={hideUI ? '' : 'max-width:1152px;margin:0 auto;padding:40px 24px;flex:1;'}>
     <slot />
   </main>
 
-  <footer>
+  {!hideUI && <footer>
     <div class="inner">
       <div class="brand">
         <div class="name">StudyAI</div>
@@ -180,7 +181,7 @@ const { title, user } = Astro.props
       </div>
     </div>
     <div class="bottom">StudyAI &copy; {new Date().getFullYear()}</div>
-  </footer>
+  </footer>}
 
   <script>
     (function() {
